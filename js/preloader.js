@@ -31,6 +31,7 @@ BasicGame.Preloader.prototype = {
     this.load.image('pinkHeart', 'assets/pink_heart.png');
     this.load.image('blueHeart', 'assets/blue_heart.png');
     this.load.spritesheet('catPics', 'assets/cat_profiles.png', 200, 200);
+    this.load.audio('gameMusic', ['audio/game_theme.ogg', 'audio/game_theme.wav']);
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
@@ -45,7 +46,11 @@ BasicGame.Preloader.prototype = {
   },
 
   update: function () {
-    this.state.start('Game');
+
+    if (this.cache.isSoundDecoded('gameMusic') && this.ready == false) {
+      this.ready = true;
+      this.state.start('MainMenu');
+    }
   }
 
 };

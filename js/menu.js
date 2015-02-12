@@ -13,6 +13,9 @@ BasicGame.MainMenu.prototype = {
     this.setTitleText();
     this.setStartText();
 
+    this.music = this.add.audio('gameMusic', 0.25, true);
+    this.music.play();
+
     var enterKey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     enterKey.onDown.add(this.startGame, this);
   },

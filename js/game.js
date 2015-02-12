@@ -251,7 +251,7 @@ BasicGame.Game.prototype = {
       heartTween.start();
 
       this.garbage = this.garbage.concat([cat1, cat2, pointsText, heart]);
-      this.time.events.add(1000, this.killGarbage, this);
+      this.time.events.add(2500, this.killGarbage, this);
       this.catCount -= 2;
       this.updateScore(this.score+score);
     },
