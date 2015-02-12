@@ -28,6 +28,7 @@ BasicGame.Game = function (game) {
   this.infoLikes;
   this.infoDislikes;
   this.infoPic;
+  this.centerText;
   this.newCatTimer;
   this.garbage = [];
   this.total = 0;
@@ -86,6 +87,14 @@ BasicGame.Game.prototype = {
       this.infoLikes.font = "Press Start 2P";
       this.infoLikes.fontSize = 13;
       this.infoLikes.anchor.set(0);
+
+      // Text
+      style = { stroke: "#000", strokeThickness: 16, fill: "#fff", align: "center" };
+      var text = this.add.text(this.world.centerX, this.world.centerY, "", style);
+      text.fontSize = 256;
+      text.font = "Arial";
+      text.anchor.set(0.5);
+      this.centerText = text;
 
       // Score
       style = { stroke: "#000", strokeThickness: 5, fill: "#fff" };
@@ -309,6 +318,17 @@ BasicGame.Game.prototype = {
     updateScore: function(newScore) {
       this.score = newScore;
       this.scoreText.text = "Total: " + this.score;
+      if (this.score >= 30) {
+        this.centerText.text = ":3";
+        this.centerText.alpha = 1;
+      } else if (this.score <= 0) {
+        this.centerText.text = ":(";
+        this.centerText.alpha = 1;
+        this.time.events.add(2000, this.quitGame, this);
+      }
+      var centerTextTween = this.add.tween(this.centerText);
+      centerTextTween.to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, null, 5000);
+      centerTextTween.start();
     },
 
     killGarbage: function() {
