@@ -29,6 +29,8 @@ BasicGame.Game = function (game) {
   this.infoDislikes;
   this.infoPic;
   this.newCatTimer;
+  this.garbage;
+  this.total = 0;
   this.data = BasicGame.Data;
 };
 
@@ -82,7 +84,15 @@ BasicGame.Game.prototype = {
       this.infoLikes.fontSize = 13;
       this.infoLikes.anchor.set(0);
 
+      // Score
+      style = { stroke: "#000", strokeThickness: 5, fill: "#fff" };
+      text = "";
+      this.scoreText = this.add.text(8, 8, text, style);
+      this.scoreText.font = "Press Start 2P";
+      this.scoreText.fontSize = 18;
+      this.infoLikes.anchor.set(0);
 
+      this.updateScore(10);
       this.debug = new Phaser.Utils.Debug(window.game);
     },
 
@@ -95,8 +105,8 @@ BasicGame.Game.prototype = {
       }, this);
 
       if (this.time.now > this.newCatTimer && this.catCount < 10) {
-        this.prime = this.addCat();
-        this.newCatTimer = this.time.now + 5000;
+        this.addCat();
+        this.newCatTimer = this.time.now + this.rnd.between(2000, 5000);
       }
     },
 
@@ -107,7 +117,6 @@ BasicGame.Game.prototype = {
       var placeAttempts;
       var newX, newY
       props = this.data.getCat();
-      console.log(props)
       newX = this.rnd.between(0, 6)*80 + 40;
       newY = this.rnd.between(0, 14)*40 + 20;
       cat = this.cats.create(newX, newY, 'cat');
@@ -142,7 +151,7 @@ BasicGame.Game.prototype = {
       var blocked;
       if (this.time.now > cat.moveTimer && !cat.busy) {
         cat.moveTween = this.add.tween(cat);
-        offset = this.rnd.between(-50, 50);
+        offset = this.rnd.between(-100, 100);
         offset = offset <= 0 ? Math.min(offset, -20) : Math.max(offset, 20)
         delta = this.rnd.pick([{ x: cat.body.x-offset}, { y: cat.body.y-offset }]);
         // If cat is moving in the x direction, make sure the sprite is flipped correctly.
@@ -153,7 +162,7 @@ BasicGame.Game.prototype = {
             cat.frame = cat.frameStart+1;
           }
         }
-        cat.moveTween.to(delta, Math.abs(offset*25), Phaser.Easing.Linear.None);
+        cat.moveTween.to(delta, Math.abs(offset*20), Phaser.Easing.Linear.None);
         cat.moveTween.start();
         cat.moveTimer = this.time.now + this.rnd.between(2000, 5000);
       }
@@ -199,6 +208,9 @@ BasicGame.Game.prototype = {
       }
       var heart;
       var heartTween;
+      var score;
+      var pointsText;
+      var style;
       cat1.inputEnabled = false;
       cat2.inputEnabled = false;
       cat1.busy = true;
@@ -214,12 +226,47 @@ BasicGame.Game.prototype = {
       cat1.body.x = cat2.body.x + 80;
       cat1.frame = cat1.frameStart+1;
       cat2.frame = cat2.frameStart;
-      heart = this.redHearts.getFirstDead();
+
+      score = this.calculateMatch(cat1, cat2);
+      if (score >= 3) {
+        heart = this.redHearts.getFirstDead();
+      } else if (score < 0) {
+        heart = this.blueHearts.getFirstDead();
+      } else {
+        heart = this.pinkHearts.getFirstDead();
+      }
+
       heart.anchor.set(0.5);
       heart.reset(cat1.body.x, cat1.body.y-15);
       heartTween = this.add.tween(heart);
       heartTween.to({ y: cat1.body.y-30 }, 1000, Phaser.Easing.Bounce.Out);
+      style = { stroke: "#000", strokeThickness: 5, fill: "#fff" };
+      pointsText = this.add.text(cat1.body.x, cat1.body.y+30, score, style);
+      pointsText.fontSize = 16;
+      pointsText.font = "Press Start 2P";
+      pointsText.anchor.set(0.5, 0);
+      pointsTextTween = this.add.tween(pointsText);
+      pointsTextTween.to({ y: cat1.body.y+42 }, 1000, Phaser.Easing.Bounce.Out);
+      pointsTextTween.start();
       heartTween.start();
+      this.updateScore(this.score+score);
+    },
+
+    calculateMatch: function(cat1, cat2) {
+      var score = 0;
+      cat1.likes.forEach(function(like) {
+        if (contains(like, cat2.likes)) {
+          score += 1;
+        } else if (contains(like, cat2.dislikes)) {
+          score -= 2;
+        }
+      });
+      cat2.likes.forEach(function(like) {
+        if (contains(like, cat1.dislikes)) {
+          score -= 2;
+        }
+      });
+      return score;
     },
 
     removeCat: function(cat) {
@@ -241,6 +288,11 @@ BasicGame.Game.prototype = {
       this.infoLikes.text = likesText;
     },
 
+    updateScore: function(newScore) {
+      this.score = newScore;
+      this.scoreText.text = "Total: " + this.score;
+    },
+
     quitGame: function (pointer) {
 
       //  Here you should destroy anything you no longer need.
@@ -251,8 +303,4 @@ BasicGame.Game.prototype = {
 
     },
 
-    render: function() {
-      if (this.prime)
-        this.debug.bodyInfo(this.prime, 32, 32)
-    }
 };

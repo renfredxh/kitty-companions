@@ -25,7 +25,12 @@ BasicGame.Data = {
     "Beaches",
     "Naps",
     "Baking",
+    "Podcasts",
     "Video Games",
+    "Running",
+    "Scratching",
+    "Yarn",
+    "Candy",
   ],
   getName: function() {
     var name = this.names[this.nameCount];
@@ -68,6 +73,9 @@ BasicGame.Data = {
     }
   },
   getCat: function() {
+    if (this.cats.length <= 0) {
+      this.generateNewCats();
+    }
     var cat = this.rnd.pick(this.cats);
     return cat;
   }
