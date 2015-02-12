@@ -25,6 +25,8 @@ BasicGame.Preloader.prototype = {
     //  Here we load the rest of the assets our game needs.
     //  As this is just a Project Template I've not provided these assets, swap them for your own.
     this.load.image('titlepage', 'assets/menu_background.png');
+    this.load.image('grass', 'assets/grass_background.png');
+    this.load.spritesheet('cat', 'assets/cat_sprites.png', 80, 40);
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 
@@ -38,7 +40,7 @@ BasicGame.Preloader.prototype = {
   },
 
   update: function () {
-    this.state.start('MainMenu');
+    this.state.start('Game');
   }
 
 };
