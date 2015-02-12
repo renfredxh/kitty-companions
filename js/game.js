@@ -29,7 +29,7 @@ BasicGame.Game = function (game) {
   this.infoDislikes;
   this.infoPic;
   this.newCatTimer;
-  this.garbage;
+  this.garbage = [];
   this.total = 0;
   this.data = BasicGame.Data;
 };
@@ -249,6 +249,10 @@ BasicGame.Game.prototype = {
       pointsTextTween.to({ y: cat1.body.y+42 }, 1000, Phaser.Easing.Bounce.Out);
       pointsTextTween.start();
       heartTween.start();
+
+      this.garbage = this.garbage.concat([cat1, cat2, pointsText, heart]);
+      this.time.events.add(1000, this.killGarbage, this);
+      this.catCount -= 2;
       this.updateScore(this.score+score);
     },
 
@@ -291,6 +295,16 @@ BasicGame.Game.prototype = {
     updateScore: function(newScore) {
       this.score = newScore;
       this.scoreText.text = "Total: " + this.score;
+    },
+
+    killGarbage: function() {
+      this.garbage.forEach(function(item) {
+        if (item.kill !== undefined) {
+          item.kill();
+        } else {
+          item.destroy();
+        }
+      });
     },
 
     quitGame: function (pointer) {
