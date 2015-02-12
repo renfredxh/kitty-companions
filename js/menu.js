@@ -25,10 +25,10 @@ BasicGame.MainMenu.prototype = {
   },
 
   setTitleText: function () {
-    var title = "Place Kitten";
+    var title = "Kitty Companions";
     var style = { stroke: "#000", strokeThickness: 16, fill: "#fff", align: "center" };
     var text = this.add.text(this.world.centerX, this.world.centerY-64, title, style);
-    text.fontSize = 64;
+    text.fontSize = 52;
     text.font = "Press Start 2P";
     text.anchor.set(0.5);
     this.titleText = text;
