@@ -89,6 +89,7 @@ BasicGame.Data = {
       } else {
         newLike = this.rnd.pick(this.likes);
         if (!contains(newLike, likes)) {
+          likes = likes.slice();
           likes[0] = newLike;
         }
       }
