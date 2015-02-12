@@ -37,7 +37,7 @@ BasicGame.Data = {
     this.nameCount =  this.nameCount == this.names.length-1 ? 0 : this.nameCount+1;
     return name;
   },
-  colors: 1,
+  colors: 6,
   getLikes: function(others) {
     var likes;
     var like;
