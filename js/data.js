@@ -2,35 +2,64 @@ function contains(value, array) {
   return array.indexOf(value) > -1;
 }
 
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
 BasicGame.Data = {
   rnd: new Phaser.RandomDataGenerator(),
   cats: [],
-  names: [
+  names: shuffle([
     "Frank",
-    "Katie",
     "Sam",
     "Boots",
     "Lilly",
     "Tigger",
     "Aaron",
-    "Moody",
     "Mochi",
     "Shinobi",
     "Bella",
-  ],
+    "Creme Puff",
+    "Grumpy",
+    "Scarlett",
+    "Katie",
+    "Winnie",
+    "Garfield",
+    "Felix",
+    "Tom",
+    "Luna",
+    "Marie",
+    "Pink",
+    "Cheshire",
+    "Heathcliff",
+    "Cleo",
+    "Sylvester",
+    "Simba",
+    "Figaro",
+    "Moon",
+  ]),
   nameCount: 0,
   likes: [
     "Cat Nip",
     "Sun Bathing",
     "Beaches",
-    "Naps",
+    "Cat Naps",
+    "Programming",
     "Baking",
+    "Knitting",
     "Podcasts",
+    "Sports",
+    "Yoga",
+    "Cryptography",
+    "Cooking",
+    "Board Games",
+    "Reading",
+    "Yodeling",
+    "Anime",
     "Video Games",
-    "Running",
     "Scratching",
     "Yarn",
-    "Candy",
   ],
   getName: function() {
     var name = this.names[this.nameCount];

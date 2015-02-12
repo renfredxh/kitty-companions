@@ -78,9 +78,9 @@ BasicGame.Game.prototype = {
       this.infoBlock.body.setSize(this.infoBorder, height, 0, 0);
       style = { stroke: "#000", strokeThickness: 10, fill: "#fff" };
       text = "";
-      this.infoName = this.add.text(infoMargin, 16, text, style);
+      this.infoName = this.add.text(infoMargin-10, 16, text, style);
       this.infoName.font = "Press Start 2P";
-      this.infoName.fontSize = 32;
+      this.infoName.fontSize = 22;
       this.infoPic = this.add.sprite(infoMargin, this.infoName.y+48, 'catPics');
       style = { stroke: "#000", strokeThickness: 8, fill: "#fff" };
       this.infoLikes = this.add.text(infoMargin, this.infoPic.y+216, text, style);
@@ -182,7 +182,7 @@ BasicGame.Game.prototype = {
         }
         cat.moveTween.to(delta, Math.abs(offset*20), Phaser.Easing.Linear.None);
         cat.moveTween.start();
-        cat.moveTimer = this.time.now + this.rnd.between(2000, 5000);
+        cat.moveTimer = this.time.now + this.rnd.between(2000, 3000);
       }
       // Stop moving if the cat hits something
       blocked = cat.body.blocked;
@@ -263,7 +263,7 @@ BasicGame.Game.prototype = {
       heartTween = this.add.tween(heart);
       heartTween.to({ y: cat1.body.y-30 }, 1000, Phaser.Easing.Bounce.Out);
       style = { stroke: "#000", strokeThickness: 5, fill: "#fff" };
-      pointsText = this.add.text(cat1.body.x, cat1.body.y+30, score, style);
+      pointsText = this.add.text(cat1.body.x, cat1.body.y+30, parseInt(score), style);
       pointsText.fontSize = 16;
       pointsText.font = "Press Start 2P";
       pointsText.anchor.set(0.5, 0);
@@ -293,7 +293,7 @@ BasicGame.Game.prototype = {
           score -= 2;
         }
       });
-      return score;
+      return score === 0 ? 1 : score;
     },
 
     removeCat: function(cat) {
@@ -317,7 +317,7 @@ BasicGame.Game.prototype = {
 
     updateScore: function(newScore) {
       this.score = newScore;
-      this.scoreText.text = "Total: " + this.score;
+      this.scoreText.text = "Total: " + parseInt(this.score);
       if (this.score >= 30) {
         this.centerText.text = ":3";
         this.centerText.alpha = 1;
