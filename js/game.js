@@ -21,6 +21,7 @@ BasicGame.Game = function (game) {
 
 
   this.cats;
+  this.catCount;
   this.infoBorder;
   this.infoBlock;
   this.newCatTimer;
@@ -44,8 +45,17 @@ BasicGame.Game.prototype = {
       this.background = this.add.tileSprite(0, 0, this.world.width-this.infoBorder, this.world.height, 'grass');
 
       // Cats
+      this.catCount = 0;
       this.newCatTimer = this.time.now;
       this.cats = this.add.group();
+
+      // Hearts
+      this.redHearts = game.add.group();
+      this.pinkHearts = game.add.group();
+      this.blueHearts = game.add.group();
+      this.redHearts.createMultiple(10, 'redHeart');
+      this.pinkHearts.createMultiple(10, 'pinkHeart');
+      this.blueHearts.createMultiple(10, 'blueHeart');
 
       // Info section
       this.infoBlock = this.add.sprite(this.world.width-this.infoBorder, 0, null);
@@ -63,9 +73,9 @@ BasicGame.Game.prototype = {
         this.moveCat(cat);
       }, this);
 
-      if (this.time.now > this.newCatTimer) {
+      if (this.time.now > this.newCatTimer && this.catCount < 10) {
         this.prime = this.addCat();
-        this.newCatTimer = this.time.now + 2000;
+        this.newCatTimer = this.time.now + 1000;
       }
     },
 
@@ -78,7 +88,8 @@ BasicGame.Game.prototype = {
       newY = this.rnd.between(0, 14)*40 + 20;
       cat = this.cats.create(newX, newY, 'cat');
       cat.busy = false;
-      cat.frame = 0;
+      cat.frameStart = 0;
+      cat.frame = cat.frameStart;
       cat.name = "Frank";
       cat.moveTimer = this.time.now + 500;
       cat.age = this.time.now;
@@ -93,6 +104,7 @@ BasicGame.Game.prototype = {
       cat.input.enableDrag(false, true, false, 255, bounds);
       cat.events.onDragStart.add(this.onCatDrag, this);
       cat.events.onDragStop.add(this.onCatDrop, this);
+      this.catCount++;
       return cat;
     },
 
@@ -106,8 +118,15 @@ BasicGame.Game.prototype = {
         cat.moveTween = this.add.tween(cat);
         offset = this.rnd.between(-50, 50);
         offset = offset <= 0 ? Math.min(offset, -20) : Math.max(offset, 20)
-        newPos = cat.body.x - offset;
         delta = this.rnd.pick([{ x: cat.body.x-offset}, { y: cat.body.y-offset }]);
+        // If cat is moving in the x direction, make sure the sprite is flipped correctly.
+        if (delta.x !== undefined) {
+          if (offset < 0) {
+            cat.frame = cat.frameStart;
+          } else {
+            cat.frame = cat.frameStart+1;
+          }
+        }
         cat.moveTween.to(delta, Math.abs(offset*25), Phaser.Easing.Linear.None);
         cat.moveTween.start();
         cat.moveTimer = this.time.now + 2000;
@@ -141,17 +160,40 @@ BasicGame.Game.prototype = {
     },
 
     catCollision: function(cat1, cat2) {
-      if (cat1 === cat2) return 
+      if (cat1 === cat2) return;
+      if (cat1.busy || cat2.busy) return;
       if (cat1.age > this.time.now - 100) {
         cat1.kill();
         return;
       }
+      var heart;
+      var heartTween;
+      cat1.inputEnabled = false;
+      cat2.inputEnabled = false;
+      cat1.busy = true;
+      cat2.busy = true;
       if (cat2.age > this.time.now - 100) {
         cat2.kill();
         return;
       }
       cat1.moveTween.stop();
       cat2.moveTween.stop();
+
+      cat1.body.y = cat2.body.y;
+      cat1.body.x = cat2.body.x + 80;
+      cat1.frame = cat1.frameStart+1;
+      cat2.frame = cat2.frameStart;
+      heart = this.redHearts.getFirstDead();
+      heart.anchor.set(0.5);
+      heart.reset(cat1.body.x, cat1.body.y-15);
+      heartTween = this.add.tween(heart);
+      heartTween.to({ y: cat1.body.y-30 }, 1000, Phaser.Easing.Bounce.Out);
+      heartTween.start();
+    },
+
+    removeCat: function(cat) {
+      cat.kill();
+      this.catCount--;
     },
 
     quitGame: function (pointer) {

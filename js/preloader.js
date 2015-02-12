@@ -27,6 +27,10 @@ BasicGame.Preloader.prototype = {
     this.load.image('titlepage', 'assets/menu_background.png');
     this.load.image('grass', 'assets/grass_background.png');
     this.load.spritesheet('cat', 'assets/cat_sprites.png', 80, 40);
+    this.load.spritesheet('redHeart', 'assets/red_heart.png');
+    this.load.spritesheet('pinkHeart', 'assets/pink_heart.png');
+    this.load.spritesheet('blueHeart', 'assets/blue_heart.png');
+    //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 
