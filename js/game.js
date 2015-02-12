@@ -182,7 +182,7 @@ BasicGame.Game.prototype = {
         }
         cat.moveTween.to(delta, Math.abs(offset*20), Phaser.Easing.Linear.None);
         cat.moveTween.start();
-        cat.moveTimer = this.time.now + this.rnd.between(2000, 3000);
+        cat.moveTimer = this.time.now + this.rnd.between(750, 3000);
       }
       // Stop moving if the cat hits something
       blocked = cat.body.blocked;
