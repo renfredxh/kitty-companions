@@ -32,6 +32,11 @@ BasicGame.Preloader.prototype = {
     this.load.image('blueHeart', 'assets/blue_heart.png');
     this.load.spritesheet('catPics', 'assets/cat_profiles.png', 200, 200);
     this.load.audio('gameMusic', ['audio/game_theme.ogg', 'audio/game_theme.wav']);
+    this.load.audio('angryKitty', ['audio/angry_kitty.ogg', 'audio/angry_kitty.wav']);
+    this.load.audio('happyKitty1', ['audio/happy_kitty1.ogg', 'audio/happy_kitty1.wav']);
+    this.load.audio('happyKitty2', ['audio/happy_kitty2.ogg', 'audio/happy_kitty2.wav']);
+    this.load.audio('happyKitty3', ['audio/happy_kitty3.ogg', 'audio/happy_kitty3.wav']);
+    this.load.audio('happyKitty4', ['audio/happy_kitty4.ogg', 'audio/happy_kitty4.wav']);
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
     //this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');

@@ -31,7 +31,10 @@ BasicGame.Game = function (game) {
   this.newCatTimer;
   this.garbage = [];
   this.total = 0;
+  this.maxCatCount = 12;
   this.data = BasicGame.Data;
+  this.happyKittySounds;
+  this.angryKittySound;
 };
 
 BasicGame.Game.Cat = function() {
@@ -92,8 +95,14 @@ BasicGame.Game.prototype = {
       this.scoreText.fontSize = 18;
       this.infoLikes.anchor.set(0);
 
+      // Sfx
+      this.happyKittySounds = [game.add.audio('happyKitty1'), game.add.audio('happyKitty2'), game.add.audio('happyKitty3'), game.add.audio('happyKitty4')];
+      this.angryKittySound = game.add.audio('angryKitty');
+      this.angryKittySound.allowMultiple = true;
+      this.happyKittySounds.forEach(function(sound) {
+        sound.allowMultiple = true;
+      })
       this.updateScore(10);
-      this.debug = new Phaser.Utils.Debug(window.game);
     },
 
     update: function() {
@@ -104,9 +113,9 @@ BasicGame.Game.prototype = {
         this.moveCat(cat);
       }, this);
 
-      if (this.time.now > this.newCatTimer && this.catCount < 10) {
+      if (this.time.now > this.newCatTimer && this.catCount < this.maxCatCount) {
         this.addCat();
-        this.newCatTimer = this.time.now + this.rnd.between(2000, 5000);
+        this.newCatTimer = this.time.now + this.rnd.between(1000, 4000);
       }
     },
 
@@ -208,6 +217,7 @@ BasicGame.Game.prototype = {
       }
       var heart;
       var heartTween;
+      var sfx;
       var score;
       var pointsText;
       var style;
@@ -230,10 +240,13 @@ BasicGame.Game.prototype = {
       score = this.calculateMatch(cat1, cat2);
       if (score >= 3) {
         heart = this.redHearts.getFirstDead();
+        sfx = this.rnd.pick(this.happyKittySounds);
       } else if (score < 0) {
         heart = this.blueHearts.getFirstDead();
+        sfx = this.angryKittySound;
       } else {
         heart = this.pinkHearts.getFirstDead();
+        sfx = this.rnd.pick(this.happyKittySounds);
       }
 
       heart.anchor.set(0.5);
@@ -249,6 +262,7 @@ BasicGame.Game.prototype = {
       pointsTextTween.to({ y: cat1.body.y+42 }, 1000, Phaser.Easing.Bounce.Out);
       pointsTextTween.start();
       heartTween.start();
+      sfx.play();
 
       this.garbage = this.garbage.concat([cat1, cat2, pointsText, heart]);
       this.time.events.add(2500, this.killGarbage, this);
