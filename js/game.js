@@ -24,7 +24,12 @@ BasicGame.Game = function (game) {
   this.catCount;
   this.infoBorder;
   this.infoBlock;
+  this.infoName;
+  this.infoLikes;
+  this.infoDislikes;
+  this.infoPic;
   this.newCatTimer;
+  this.data = BasicGame.Data;
 };
 
 BasicGame.Game.Cat = function() {
@@ -38,11 +43,13 @@ BasicGame.Game.Cat = function() {
 BasicGame.Game.prototype = {
 
     create: function () {
+      var width = this.world.width;
+      var height = this.world.height
 
       this.infoBorder = 240;
       //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
       this.stage.backgroundColor = '#ef5350';
-      this.background = this.add.tileSprite(0, 0, this.world.width-this.infoBorder, this.world.height, 'grass');
+      this.background = this.add.tileSprite(0, 0, width-this.infoBorder, height, 'grass');
 
       // Cats
       this.catCount = 0;
@@ -58,9 +65,23 @@ BasicGame.Game.prototype = {
       this.blueHearts.createMultiple(10, 'blueHeart');
 
       // Info section
-      this.infoBlock = this.add.sprite(this.world.width-this.infoBorder, 0, null);
+      var style, text;
+      var infoMargin = width-this.infoBorder+20
+      this.infoBlock = this.add.sprite(width-this.infoBorder, 0, null);
       this.physics.enable(this.infoBlock, Phaser.Physics.ARCADE);
-      this.infoBlock.body.setSize(this.infoBorder, this.world.height, 0, 0);
+      this.infoBlock.body.setSize(this.infoBorder, height, 0, 0);
+      style = { stroke: "#000", strokeThickness: 10, fill: "#fff" };
+      text = "";
+      this.infoName = this.add.text(infoMargin, 16, text, style);
+      this.infoName.font = "Press Start 2P";
+      this.infoName.fontSize = 32;
+      this.infoPic = this.add.sprite(infoMargin, this.infoName.y+48, 'catPics');
+      style = { stroke: "#000", strokeThickness: 8, fill: "#fff" };
+      this.infoLikes = this.add.text(infoMargin, this.infoPic.y+216, text, style);
+      this.infoLikes.font = "Press Start 2P";
+      this.infoLikes.fontSize = 13;
+      this.infoLikes.anchor.set(0);
+
 
       this.debug = new Phaser.Utils.Debug(window.game);
     },
@@ -75,22 +96,27 @@ BasicGame.Game.prototype = {
 
       if (this.time.now > this.newCatTimer && this.catCount < 10) {
         this.prime = this.addCat();
-        this.newCatTimer = this.time.now + 1000;
+        this.newCatTimer = this.time.now + 5000;
       }
     },
 
     addCat: function() {
       var cat;
+      var props;
       var bounds;
       var placeAttempts;
       var newX, newY
+      props = this.data.getCat();
+      console.log(props)
       newX = this.rnd.between(0, 6)*80 + 40;
       newY = this.rnd.between(0, 14)*40 + 20;
       cat = this.cats.create(newX, newY, 'cat');
       cat.busy = false;
-      cat.frameStart = 0;
+      cat.name = props.name;
+      cat.likes = props.likes;
+      cat.dislikes= props.dislikes;
+      cat.frameStart = props.color*2;
       cat.frame = cat.frameStart;
-      cat.name = "Frank";
       cat.moveTimer = this.time.now + 500;
       cat.age = this.time.now;
       cat.moveTween = this.add.tween(cat);
@@ -129,7 +155,7 @@ BasicGame.Game.prototype = {
         }
         cat.moveTween.to(delta, Math.abs(offset*25), Phaser.Easing.Linear.None);
         cat.moveTween.start();
-        cat.moveTimer = this.time.now + 2000;
+        cat.moveTimer = this.time.now + this.rnd.between(2000, 5000);
       }
       // Stop moving if the cat hits something
       blocked = cat.body.blocked;
@@ -143,6 +169,7 @@ BasicGame.Game.prototype = {
       if (cat.moveTween !== undefined) {
         cat.moveTween.stop();
       }
+      this.updateInfoSection(cat);
     },
 
     onCatDrop: function(cat, pointer) {
@@ -164,6 +191,10 @@ BasicGame.Game.prototype = {
       if (cat1.busy || cat2.busy) return;
       if (cat1.age > this.time.now - 100) {
         cat1.kill();
+        return;
+      }
+      if (cat2.age > this.time.now - 100) {
+        cat2.kill();
         return;
       }
       var heart;
@@ -194,6 +225,20 @@ BasicGame.Game.prototype = {
     removeCat: function(cat) {
       cat.kill();
       this.catCount--;
+    },
+
+    updateInfoSection: function(cat) {
+      var likesText = "Likes:\n";
+      this.infoName.text = cat.name;
+      this.infoPic.frame = cat.frameStart/2;
+      cat.likes.forEach(function(like) {
+        likesText += "• " + like + "\n"
+      });
+      likesText += "Dislikes:\n"
+      cat.dislikes.forEach(function(dislike) {
+        likesText += "• " + dislike + "\n"
+      });
+      this.infoLikes.text = likesText;
     },
 
     quitGame: function (pointer) {
