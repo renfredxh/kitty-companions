@@ -23,6 +23,7 @@ BasicGame.Game = function (game) {
   this.cats;
   this.infoBorder;
   this.infoBlock;
+  this.newCatTimer;
 };
 
 BasicGame.Game.Cat = function() {
@@ -43,8 +44,8 @@ BasicGame.Game.prototype = {
       this.background = this.add.tileSprite(0, 0, this.world.width-this.infoBorder, this.world.height, 'grass');
 
       // Cats
+      this.newCatTimer = this.time.now;
       this.cats = this.add.group();
-      this.prime = this.addCat();
 
       // Info section
       this.infoBlock = this.add.sprite(this.world.width-this.infoBorder, 0, null);
@@ -56,23 +57,36 @@ BasicGame.Game.prototype = {
 
     update: function() {
       this.physics.arcade.overlap(this.infoBlock, this.cats, this.blockCat, null, this);
+      this.physics.arcade.overlap(this.cats, this.cats, this.catCollision, null, this);
+
       this.cats.forEach(function(cat) {
         this.moveCat(cat);
       }, this);
 
+      if (this.time.now > this.newCatTimer) {
+        this.prime = this.addCat();
+        this.newCatTimer = this.time.now + 2000;
+      }
     },
 
     addCat: function() {
       var cat;
       var bounds;
-      cat = this.cats.create(this.world.centerX, this.world.centerY, 'cat');
+      var placeAttempts;
+      var newX, newY
+      newX = this.rnd.between(0, 6)*80 + 40;
+      newY = this.rnd.between(0, 14)*40 + 20;
+      cat = this.cats.create(newX, newY, 'cat');
       cat.busy = false;
       cat.frame = 0;
       cat.name = "Frank";
       cat.moveTimer = this.time.now + 500;
+      cat.age = this.time.now;
+      cat.moveTween = this.add.tween(cat);
 
       this.physics.enable(cat, Phaser.Physics.ARCADE);
       cat.body.collideWorldBounds = true
+      cat.body.setSize(80, 40, 0, 0);
 
       bounds = new Phaser.Rectangle(0, 0, this.world.width-this.infoBorder, this.world.height);
       cat.inputEnabled = true;
@@ -93,14 +107,14 @@ BasicGame.Game.prototype = {
         offset = this.rnd.between(-50, 50);
         offset = offset <= 0 ? Math.min(offset, -20) : Math.max(offset, 20)
         newPos = cat.body.x - offset;
-        delta = this.rnd.pick([{ x: newPos }, { y: newPos }]);
+        delta = this.rnd.pick([{ x: cat.body.x-offset}, { y: cat.body.y-offset }]);
         cat.moveTween.to(delta, Math.abs(offset*25), Phaser.Easing.Linear.None);
         cat.moveTween.start();
         cat.moveTimer = this.time.now + 2000;
       }
       // Stop moving if the cat hits something
       blocked = cat.body.blocked;
-      if (blocked.up || blocked.down || blocked.left || blocked.right) {
+      if (this.isBlocked(cat.body) && cat.moveTween !== undefined) {
         cat.moveTween.stop();
       }
     },
@@ -121,6 +135,25 @@ BasicGame.Game.prototype = {
       cat.body.x -= 1;
     },
 
+    isBlocked: function(body) {
+      var blocked = body.blocked;
+      return blocked.up || blocked.down || blocked.left || blocked.right;
+    },
+
+    catCollision: function(cat1, cat2) {
+      if (cat1 === cat2) return 
+      if (cat1.age > this.time.now - 100) {
+        cat1.kill();
+        return;
+      }
+      if (cat2.age > this.time.now - 100) {
+        cat2.kill();
+        return;
+      }
+      cat1.moveTween.stop();
+      cat2.moveTween.stop();
+    },
+
     quitGame: function (pointer) {
 
       //  Here you should destroy anything you no longer need.
@@ -132,5 +165,7 @@ BasicGame.Game.prototype = {
     },
 
     render: function() {
+      if (this.prime)
+        this.debug.bodyInfo(this.prime, 32, 32)
     }
 };
