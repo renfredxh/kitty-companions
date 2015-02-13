@@ -8,7 +8,7 @@ function shuffle(o){ //v1.0
 };
 
 BasicGame.Data = {
-  rnd: new Phaser.RandomDataGenerator(),
+  rnd: new Phaser.RandomDataGenerator([Date.now()]),
   cats: [],
   names: shuffle([
     "Frank",
@@ -34,6 +34,7 @@ BasicGame.Data = {
     "Cheshire",
     "Heathcliff",
     "Cleo",
+    "Skitty",
     "Sylvester",
     "Simba",
     "Figaro",

@@ -52,6 +52,7 @@ BasicGame.Game.prototype = {
       var width = this.world.width;
       var height = this.world.height
 
+      this.rnd.sow([Date.now()]);
       this.infoBorder = 240;
       //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
       this.stage.backgroundColor = '#ef5350';
