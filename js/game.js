@@ -116,6 +116,7 @@ BasicGame.Game.prototype = {
     },
 
     update: function() {
+      this.catCount = this.cats.countLiving();
       this.physics.arcade.overlap(this.infoBlock, this.cats, this.blockCat, null, this);
       this.physics.arcade.overlap(this.cats, this.cats, this.catCollision, null, this);
 
@@ -158,7 +159,6 @@ BasicGame.Game.prototype = {
       cat.input.enableDrag(false, true, false, 255, bounds);
       cat.events.onDragStart.add(this.onCatDrag, this);
       cat.events.onDragStop.add(this.onCatDrop, this);
-      this.catCount++;
       return cat;
     },
 
@@ -235,10 +235,6 @@ BasicGame.Game.prototype = {
       cat2.inputEnabled = false;
       cat1.busy = true;
       cat2.busy = true;
-      if (cat2.age > this.time.now - 100) {
-        cat2.kill();
-        return;
-      }
       cat1.moveTween.stop();
       cat2.moveTween.stop();
 
@@ -276,7 +272,6 @@ BasicGame.Game.prototype = {
 
       this.garbage = this.garbage.concat([cat1, cat2, pointsText, heart]);
       this.time.events.add(2500, this.killGarbage, this);
-      this.catCount -= 2;
       this.updateScore(this.score+score);
     },
 
@@ -299,7 +294,6 @@ BasicGame.Game.prototype = {
 
     removeCat: function(cat) {
       cat.kill();
-      this.catCount--;
     },
 
     updateInfoSection: function(cat) {
