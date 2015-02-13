@@ -91,7 +91,7 @@ BasicGame.Data = {
   generateNewCats: function() {
     var likes = [];
     var newLike;
-    for (var i=0; i<10; i++) {
+    for (var i=0; i<8; i++) {
       if (i%2 === 0) {
         likes = this.getLikes(3, 4);
       } else {
