@@ -2,6 +2,11 @@ function contains(value, array) {
   return array.indexOf(value) > -1;
 }
 
+function remove(value, array) {
+  var index = array.indexOf(value);
+  array.splice(index, 1);
+  return array;
+}
 function shuffle(o){ //v1.0
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
@@ -68,12 +73,14 @@ BasicGame.Data = {
     return name;
   },
   colors: 6,
-  getLikes: function(others) {
+  getLikes: function(min, max, others) {
     var likes;
     var like;
+    var count;
     if (others === undefined) others = [];
+    count = this.rnd.between(min, max);
     likes = []
-    for (var i=0; i<this.rnd.between(3,5); i++) {
+    for (var i=0; i<count; i++) {
       like = this.rnd.pick(this.likes);
       if (!contains(like, likes) && !contains(like, others)) {
         likes.push(like);
@@ -86,7 +93,7 @@ BasicGame.Data = {
     var newLike;
     for (var i=0; i<10; i++) {
       if (i%2 === 0) {
-        likes = this.getLikes();
+        likes = this.getLikes(3, 4);
       } else {
         newLike = this.rnd.pick(this.likes);
         if (!contains(newLike, likes)) {
@@ -99,7 +106,7 @@ BasicGame.Data = {
         name: this.getName(),
         color: this.rnd.between(1, this.colors),
         likes: likes,
-        dislikes: this.getLikes(likes)
+        dislikes: this.getLikes(1, 2, likes)
       });
     }
   },
@@ -108,6 +115,7 @@ BasicGame.Data = {
       this.generateNewCats();
     }
     var cat = this.rnd.pick(this.cats);
+    remove(cat, this.cats);
     return cat;
   }
 };
