@@ -59,6 +59,8 @@ BasicGame.Game.prototype = {
       this.background = this.add.tileSprite(0, 0, width-this.infoBorder, height, 'grass');
 
       // Cats
+      this.data.cats = [];
+      this.data.generateNewCats();
       this.catCount = 0;
       this.newCatTimer = this.time.now;
       this.cats = this.add.group();

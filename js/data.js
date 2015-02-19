@@ -95,13 +95,17 @@ BasicGame.Data = {
       if (i%2 === 0) {
         likes = this.getLikes(3, 4);
       } else {
+        // Every cat that's made has an "optimal" match with the same
+        // or very similar likes/dislikes.
         newLike = this.rnd.pick(this.likes);
         if (!contains(newLike, likes)) {
           likes = likes.slice();
-          likes[0] = newLike;
+          // Add in a new like to mix it up sometimes.
+          if (this.rnd.between(0, 1) === 1) {
+            likes[0] = newLike;
+          }
         }
       }
-
       this.cats.push({
         name: this.getName(),
         color: this.rnd.between(1, this.colors),
